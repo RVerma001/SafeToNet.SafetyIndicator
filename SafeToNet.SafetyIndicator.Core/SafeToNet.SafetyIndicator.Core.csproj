@@ -1,0 +1,49 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Models\**" />
+    <Compile Remove="Repositories\**" />
+    <EmbeddedResource Remove="Models\**" />
+    <EmbeddedResource Remove="Repositories\**" />
+    <None Remove="Models\**" />
+    <None Remove="Repositories\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="Models\Constants\AnnotationConsts.cs" />
+    <Compile Include="Models\Constants\StrikeConstants.cs" />
+    <Compile Include="Models\Entities\IEntity.cs" />
+    <Compile Include="Models\Entities\InsightGraph.cs" />
+    <Compile Include="Models\Entities\SafetyIndicator.cs" />
+    <Compile Include="Models\Entities\InsightsByRequest.cs" />
+    <Compile Include="Repositories\ISafetyIndicatorRepository.cs" />
+    <Compile Include="Repositories\SafetyIndicatorRepository.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Autofac" Version="4.9.4" />
+    <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="5.0.1" />
+    <PackageReference Include="Autofac.Extras.DynamicProxy" Version="4.5.0" />
+    <PackageReference Include="JetBrains.Annotations" Version="2019.1.3" />
+    <PackageReference Include="Microsoft.AspNetCore.App" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Azure.DocumentDB" Version="2.6.0" />    
+    <PackageReference Include="Microsoft.Azure.DocumentDB.Core" Version="2.6.0" />
+    <PackageReference Include="MongoDb.Driver" Version="2.9.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
+    <PackageReference Include="NuGet.CommandLine" Version="5.3.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="SafeToNet.Commons" Version="1.1264.1" />
+    <PackageReference Include="SafeToNet.Configuration.Models" Version="1.1585.1" />
+    <PackageReference Include="SafeToNet.Data" Version="1.644.1" />
+    <PackageReference Include="Serilog" Version="2.8.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="4.0.1" />
+    <PackageReference Include="Swashbuckle.AspNetCore.Cli" Version="4.0.1" />
+  </ItemGroup>
+
+</Project>
