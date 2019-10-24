@@ -24,11 +24,6 @@ namespace SafeToNet.SafetyIndicator.Core.Ioc
                 ApplicationConfiguration.Database.Name, accessCollectionName);
 
             builder.RegisterInstance<ISafetyIndicatorRepository>(accessRepository);
-
-            builder.RegisterType<SafetyIndicatorRepository>()
-                .As<ISafetyIndicatorRepository>()
-                .SingleInstance();
-
         }
 
         public static void RegisterServices(this ContainerBuilder builder)

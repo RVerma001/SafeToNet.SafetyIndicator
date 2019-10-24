@@ -1,7 +1,6 @@
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -34,8 +33,7 @@ namespace SafeToNet.SafetyIndicator.Api
         {
             Configuration = BindConfiguration(configuration);
         }
-
-
+        
         private static IConfiguration BindConfiguration(IConfiguration configuration)
         {
             configuration.GetSection("API").Bind(ApplicationConfiguration.Api);
@@ -46,9 +44,8 @@ namespace SafeToNet.SafetyIndicator.Api
 
             return configuration;
         }
-
-
-        public void ConfigureServices(IServiceCollection services)
+        
+        public IServiceProvider ConfigureServices(IServiceCollection services)
         {
             services.AddOptions();
 
@@ -100,8 +97,7 @@ namespace SafeToNet.SafetyIndicator.Api
                 options.HeaderNames.Add("x-b3-flags");
                 options.HeaderNames.Add("x-ot-span-context");
             });
-
-
+            
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Latest).AddControllersAsServices()
                 .AddJsonOptions(options =>
                 {
@@ -132,14 +128,22 @@ namespace SafeToNet.SafetyIndicator.Api
             {
                 options.IgnorePatterns.Add(x => !x.RequestUri.IsLoopback);
             });
+
+            var containerBuilder = new ContainerBuilder();
+            containerBuilder.RegisterServices();
+            containerBuilder.RegisterRepositories();
+
+            containerBuilder.Populate(services);
+
+            var container = containerBuilder.Build();
+
+            return new AutofacServiceProvider(container);
         }
 
         public void ConfigureContainer(ContainerBuilder builder)
         {
-            builder.RegisterInterceptors();
             builder.RegisterRepositories();
             builder.RegisterServices();
-            builder.RegisterTracer();
         }
 
         public void Configure(IApplicationBuilder app)
