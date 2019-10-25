@@ -140,12 +140,6 @@ namespace SafeToNet.SafetyIndicator.Api
             return new AutofacServiceProvider(container);
         }
 
-        public void ConfigureContainer(ContainerBuilder builder)
-        {
-            builder.RegisterRepositories();
-            builder.RegisterServices();
-        }
-
         public void Configure(IApplicationBuilder app)
         {
             app.UseHealthChecks("/probes/health");
