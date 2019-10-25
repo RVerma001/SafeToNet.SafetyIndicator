@@ -1,116 +1,133 @@
-﻿using System;
+﻿using Moq;
+using SafeToNet.SafetyIndicator.Core.Models.Entities;
+using SafeToNet.SafetyIndicator.TestHelper;
+using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace SafeToNet.SafetyIndicator.Core.UnitTests.Services
 {
-    //public class SafetyIndicatorServiceTests
-    //{
+    public class SafetyIndicatorServiceTests
+    {
+        private MockIoc Mock { get; set; }
+        private List<InsightGraph> InsightGraphData { get; set; }
 
-    //    private readonly IServiceProvider _serviceProvider;
+        public SafetyIndicatorServiceTests()
+        {
+            Mock = new MockIoc();
+            InsightGraphData = StaticData.InsightGraphs;
+        }
 
-    //    public SafetyIndicatorServiceTests()
-    //    {
-    //        var serviceCollection = new MockIoc().ServiceCollection;
-    //        _serviceProvider = serviceCollection.BuildServiceProvider();
-    //    }
+        [Fact]
+        public void CreateInsights_CheckResponseCompleted()
+        {
+            // Arrange
+            var data = StaticData.InsightsRequests;
 
-    //    [Fact]
-    //    public void CreateStrike_Returns_StrikeResponse()
-    //    {
-    //        var strike = StaticData.Strike;
-    //        var serviceCollection = new MockIoc().ServiceCollection;
-    //        var repository = new Mock<IStrikeRepository>();
+            Mock.Service.Setup(x => x.CreateInsights(data));
+          
+            // Act
+            var result = Mock.Service.Object.CreateInsights(data);
 
-    //        repository.Setup(r => r.Insert(It.IsAny<IEnumerable<Models.Entities.Strike>>()));
-    //        serviceCollection.AddSingleton(repository.Object);
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal(TaskStatus.RanToCompletion, result.Status);
+        }
 
-    //        var serviceProvider = serviceCollection.BuildServiceProvider();
+        [Fact]
+        public void GetLastDayByDeviceId_CountResponse()
+        {
+            // Arrange
+            Mock.Service.Setup(x => x.GetLastOneDayAndDeviceIdBy(StaticData.DeviceID))
+                .ReturnsAsync(InsightGraphData);
 
-    //        var strikeService = serviceProvider.GetService<IStrikeService>();
+            // Act
+            var result = Mock.Service.Object.GetLastOneDayAndDeviceIdBy(StaticData.DeviceID).Result;
+            var insightsCount = result.Count();
 
-    //        strikeService.CreateStrike(StaticData.StrikeRequests);
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal(5, insightsCount);
+        }
 
-    //        repository.Verify(r => r.Insert(It.IsAny<IEnumerable<Models.Entities.Strike>>()));
-    //    }
+        [Fact]
+        public void GetLastDayByDeviceId_CheckResponseType()
+        {
+            // Arrange
+            Mock.Service.Setup(x => x.GetLastOneDayAndDeviceIdBy(StaticData.DeviceID))
+                .ReturnsAsync(InsightGraphData);
 
-    //    [Fact]
-    //    public void CreateStrike_Null_StrikeRequest_ThrowsNullReferenceException()
-    //    {
-    //        var strikeService = _serviceProvider.GetService<IStrikeService>();
+            // Act
+            var result = Mock.Service.Object.GetLastOneDayAndDeviceIdBy(StaticData.DeviceID).Result;
 
-    //        Assert.ThrowsAsync<ArgumentException>(() => strikeService.CreateStrike(null));
-    //    }
-    //     * private readonly IServiceProvider _serviceProvider;
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsAssignableFrom<IEnumerable<InsightGraph>>(result);
+        }
 
-    //    public StrikeServiceTests()
-    //    {
-    //        var serviceCollection = new MockIoc().ServiceCollection;
-    //        _serviceProvider = serviceCollection.BuildServiceProvider();
-    //    }
+        [Fact]
+        public void GetLastDayByDeviceId_CheckFirstItemValues()
+        {
+            // Arrange
+            Mock.Service.Setup(x => x.GetLastOneDayAndDeviceIdBy(StaticData.DeviceID))
+                .ReturnsAsync(InsightGraphData);
 
-    //    [Fact]
-    //    public void CreateStrike_Returns_StrikeResponse()
-    //    {
-    //        var strike = StaticData.Strike;
-    //        var serviceCollection = new MockIoc().ServiceCollection;
-    //        var repository = new Mock<IStrikeRepository>();
+            // Act
+            var result = Mock.Service.Object.GetLastOneDayAndDeviceIdBy(StaticData.DeviceID).Result.ToList();
 
-    //        repository.Setup(r => r.Insert(It.IsAny<IEnumerable<Models.Entities.Strike>>()));
-    //        serviceCollection.AddSingleton(repository.Object);
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal(new DateTime(2019, 09, 01, 15, 0, 0), result[0].DateGenerated);
+            Assert.Equal(50.0M, result[0].Value);
+        }
 
-    //        var serviceProvider = serviceCollection.BuildServiceProvider();
+        [Fact]
+        public void GetParentAlertInsights_CountResponse()
+        {
+            // Arrange
+            Mock.Service.Setup(x => x.GetParentAlertInsights(StaticData.DeviceID, 10, 5))
+                .ReturnsAsync(InsightGraphData);
 
-    //        var strikeService = serviceProvider.GetService<IStrikeService>();
+            // Act
+            var result = Mock.Service.Object.GetParentAlertInsights(StaticData.DeviceID, 10, 5).Result.ToList();
+            var count = result.Count();
 
-    //        strikeService.CreateStrike(StaticData.StrikeRequests);
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal(5, count);
+        }
 
-    //        repository.Verify(r => r.Insert(It.IsAny<IEnumerable<Models.Entities.Strike>>()));
-    //    }
+        [Fact]
+        public void GetParentAlertInsights_CheckResponseType()
+        {
+            // Arrange
+            Mock.Service.Setup(x => x.GetParentAlertInsights(StaticData.DeviceID, 10, 5))
+                .ReturnsAsync(InsightGraphData);
 
-    //    [Fact]
-    //    public void CreateStrike_Null_StrikeRequest_ThrowsNullReferenceException()
-    //    {
-    //        var strikeService = _serviceProvider.GetService<IStrikeService>();
+            // Act
+            var result = Mock.Service.Object.GetParentAlertInsights(StaticData.DeviceID, 10, 5).Result.ToList();
+            
+            // Assert
+            Assert.NotNull(result);
+            Assert.IsAssignableFrom<IEnumerable<InsightGraph>>(result);
+        }
 
-    //        Assert.ThrowsAsync<ArgumentException>(() => strikeService.CreateStrike(null));
-    //    }
-    //    private readonly IServiceProvider _serviceProvider;
+        [Fact]
+        public void GetParentAlertInsights_CheckFirstItemValues()
+        {
+            // Arrange
+            Mock.Service.Setup(x => x.GetParentAlertInsights(StaticData.DeviceID, 10, 5))
+                .ReturnsAsync(InsightGraphData);
 
-    //    public StrikeServiceTests()
-    //    {
-    //        var serviceCollection = new MockIoc().ServiceCollection;
-    //        _serviceProvider = serviceCollection.BuildServiceProvider();
-    //    }
+            // Act
+            var result = Mock.Service.Object.GetParentAlertInsights(StaticData.DeviceID, 10, 5).Result.ToList();
 
-    //    [Fact]
-    //    public void CreateStrike_Returns_StrikeResponse()
-    //    {
-    //        var strike = StaticData.Strike;
-    //        var serviceCollection = new MockIoc().ServiceCollection;
-    //        var repository = new Mock<IStrikeRepository>();
-
-    //        repository.Setup(r => r.Insert(It.IsAny<IEnumerable<Models.Entities.Strike>>()));
-    //        serviceCollection.AddSingleton(repository.Object);
-
-    //        var serviceProvider = serviceCollection.BuildServiceProvider();
-
-    //        var strikeService = serviceProvider.GetService<IStrikeService>();
-
-    //        strikeService.CreateStrike(StaticData.StrikeRequests);
-
-    //        repository.Verify(r => r.Insert(It.IsAny<IEnumerable<Models.Entities.Strike>>()));
-    //    }
-
-    //    [Fact]
-    //    public void CreateStrike_Null_StrikeRequest_ThrowsNullReferenceException()
-    //    {
-    //        var strikeService = _serviceProvider.GetService<IStrikeService>();
-
-    //        Assert.ThrowsAsync<ArgumentException>(() => strikeService.CreateStrike(null));
-    //    }
-
-    //}
-
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal(new DateTime(2019, 09, 01, 15, 0, 0), result[0].DateGenerated);
+            Assert.Equal(50.0M, result[0].Value);
+        }
+    }
 }

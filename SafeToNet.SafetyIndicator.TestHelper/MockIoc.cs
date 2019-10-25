@@ -1,46 +1,28 @@
-﻿using Autofac;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Moq;
+﻿using Moq;
+using Moq.AutoMock;
 using SafeToNet.SafetyIndicator.Api.Controllers;
-using SafeToNet.SafetyIndicator.Core.Ioc;
-using SafeToNet.SafetyIndicator.Core.Repositories;
+using SafeToNet.SafetyIndicator.Core.Models.Entities;
 using SafeToNet.SafetyIndicator.Core.Services;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SafeToNet.SafetyIndicator.TestHelper
 {
-    //public static class MockIoc
-    //{
-    //    public static readonly IServiceCollection ServiceCollection;
+    public class MockIoc
+    {
+        public SafetyIndicatorController Controller { get; private set; }
 
-    //    public static void Register(this ContainerBuilder builder)
-    //    {
-    //        ServiceCollection = new ServiceCollection();
-    //        RegisterDependencies();
-    //        RegisterRepositories();
-    //    }
+        public Mock<ISafetyIndicatorService> Service { get; private set; }
 
-    //    private static void RegisterDependencies()
-    //    {
-    //        // MS Ioc implementation
-    //        // ServiceCollection.RegisterServices();
-    //    }
+        public MockIoc()
+        {
+            var mocker = new AutoMocker(MockBehavior.Loose);
 
-    //    private static void RegisterRepositories()
-    //    {
-    //        var repository = new Mock<ISafetyIndicatorRepository>();
-    //        var loggerService = new Mock<ILogger<SafetyIndicatorController>>();
-    //        var insightService = new Mock<ISafetyIndicatorService>();
-
-    //        repository
-    //            .Setup(s => s.Insert(It.IsAny<IEnumerable<Core.Models.Entities.SafetyIndicator>>())).Returns(Task.CompletedTask);
-
-    //        ServiceCollection.AddSingleton(repository.Object);
-    //        ServiceCollection.AddSingleton(loggerService.Object);
-    //        ServiceCollection.AddSingleton(insightService.Object);
-    //        ServiceCollection.AddTransient<SafetyIndicatorController>();
-    //    }
-    //}
+            var controller = mocker.CreateInstance<SafetyIndicatorController>();
+            var service = mocker.GetMock<ISafetyIndicatorService>();
+            
+            Controller = controller;
+            Service = service;
+        }
+    }
 }

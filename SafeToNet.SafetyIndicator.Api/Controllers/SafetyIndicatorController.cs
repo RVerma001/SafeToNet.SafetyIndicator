@@ -14,7 +14,7 @@ namespace SafeToNet.SafetyIndicator.Api.Controllers
     [ApiController]
     public class SafetyIndicatorController : ControllerBase
     {
-        private readonly ISafetyIndicatorService _safetyIndicatorService;
+        public ISafetyIndicatorService _safetyIndicatorService;
         private readonly ILogger<SafetyIndicatorController> _logger;
 
         public SafetyIndicatorController(ISafetyIndicatorService safetyIndicatorService, ILogger<SafetyIndicatorController> logger)
@@ -26,7 +26,7 @@ namespace SafeToNet.SafetyIndicator.Api.Controllers
         [HttpGet]
         public IActionResult Get()
         {
-            return new OkObjectResult("SafeToNet Safety Indicator");
+            return new OkObjectResult("Get SafetyIndicator");
         }
 
         [HttpPost]
