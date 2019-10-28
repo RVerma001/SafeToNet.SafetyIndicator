@@ -36,15 +36,39 @@ namespace SafeToNet.SafetyIndicator.Core.Services
 
         private static IEnumerable<InsightGraph> GroupInsightsBy(IEnumerable<Models.Entities.SafetyIndicator> insights, int groupBy)
         {
-            var graphData = (from insight in insights
-                             where insight.DateGenerated.Minute % groupBy == 0
-                             select new InsightGraph
-                             {
-                                 Value = insight.ProtectionLevel,
-                                 DateGenerated = insight.DateGenerated
-                             }).ToAsyncEnumerable();
+            try
+            {
+                //var list = new List<InsightGraph>();
+                //var filteredInsights = insights.Where(t => t.DateGenerated.Minute % groupBy == 0);
+                //foreach (var insight in filteredInsights)
+                //{
+                //    list.Add(new InsightGraph()
+                //    {
+                //        Value = insight.ProtectionLevel,
+                //        DateGenerated = insight.DateGenerated
+                //    });
+                //}
 
-            return graphData.OrderBy(r => r.DateGenerated).ToEnumerable();
+                //var newList = list.ToAsyncEnumerable();
+
+                //var orderedList = newList.OrderBy(r => r.DateGenerated).ToEnumerable();
+
+                //return orderedList;
+
+                var graphData = (from insight in insights
+                                 where insight.DateGenerated.Minute % groupBy == 0
+                                 select new InsightGraph
+                                 {
+                                     Value = insight.ProtectionLevel,
+                                     DateGenerated = insight.DateGenerated
+                                 }).ToAsyncEnumerable();
+
+                return graphData.OrderBy(r => r.DateGenerated).ToEnumerable();
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
         }
 
         public async Task<IEnumerable<InsightGraph>> GetParentAlertInsights(Guid deviceId, double hours, int minutes)
