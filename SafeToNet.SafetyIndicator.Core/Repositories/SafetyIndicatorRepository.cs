@@ -25,20 +25,23 @@ namespace SafeToNet.SafetyIndicator.Core.Repositories
             var indexDefinition = Builders<Models.Entities.SafetyIndicator>.IndexKeys.Combine(
                 Builders<Models.Entities.SafetyIndicator>.IndexKeys.Ascending(f => f.DateGenerated),
                 Builders<Models.Entities.SafetyIndicator>.IndexKeys.Ascending(f => f.DeviceId));
-
+            
             await _mongoCollection.Indexes.CreateOneAsync(new CreateIndexModel<Models.Entities.SafetyIndicator>(indexDefinition));
         }
 
-        public async Task Insert(IEnumerable<Models.Entities.SafetyIndicator> items)
+        public Task Insert(IEnumerable<Models.Entities.SafetyIndicator> items)
         {
             var enumerable = items.ToList();
             if (items == null || !enumerable.Any()) throw new ArgumentNullException(nameof(items));
 
             foreach (var insight in enumerable)
             {
-                await _mongoCollection.InsertOneAsync(insight);
+                base.Insert(insight);
+                //await _mongoCollection.InsertOneAsync(insight);
                 //await InsertAsync(insight);
             }
+
+            return Task.CompletedTask;
         }
 
         public async Task<IEnumerable<Models.Entities.SafetyIndicator>> GetLastOneDayAndDeviceIdBy(Guid deviceId)
@@ -49,7 +52,7 @@ namespace SafeToNet.SafetyIndicator.Core.Repositories
             builder.Lte(f => f.DateGenerated, DateTime.UtcNow)
             & builder.Gte(f => f.DateGenerated, DateTime.UtcNow.AddHours(-24));
 
-            return await _mongoCollection.Find(filter).ToListAsync();
+            return await GetByExpressionAsync(filter);
         }
 
         public async Task<IEnumerable<Models.Entities.SafetyIndicator>> GetLastHoursInsightsByDeviceId(Guid deviceId, double hours)
@@ -60,7 +63,7 @@ namespace SafeToNet.SafetyIndicator.Core.Repositories
                          builder.Lte(f => f.DateGenerated, DateTime.UtcNow)
                          & builder.Gte(f => f.DateGenerated, DateTime.UtcNow.AddHours(-hours));
 
-            return await _mongoCollection.Find(filter).ToListAsync();
+            return await GetByExpressionAsync(filter);
         }
     }
 }

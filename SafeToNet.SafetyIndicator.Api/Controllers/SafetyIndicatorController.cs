@@ -31,8 +31,8 @@ namespace SafeToNet.SafetyIndicator.Api.Controllers
 
         [HttpPost]
         [ModelValidation]
-        [Authenticate]
-        [Route("safetyIndicator")]
+        [Authenticate]        
+        [Route("create")]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -50,7 +50,7 @@ namespace SafeToNet.SafetyIndicator.Api.Controllers
 
         [HttpGet]
         [Authenticate]
-        [Route("safetyIndicator/{deviceId}")]
+        [Route("{deviceId}")]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -65,7 +65,7 @@ namespace SafeToNet.SafetyIndicator.Api.Controllers
         }
 
         [HttpPost]
-        [Route("GetsafetyIndicatorBy")]
+        [Route("GetInsightBy")]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(typeof(IEnumerable<Core.Models.Entities.SafetyIndicator>), StatusCodes.Status200OK)]
